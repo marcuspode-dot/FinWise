@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinWise - Platformă Interactivă de Educație Financiară & Buget</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- NOTIFICĂRI TOAST -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- HEADER & NAVIGARE PRINCIPALĂ -->
+    <header class="main-header">
+        <div class="header-inner">
+            <div class="brand" onclick="schimbaSectiune('dashboard')">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="logo-name">FinWise</span>
+                    <span class="logo-badge">EduFin Hub</span>
+                </div>
+            </div>
+
+            <!-- Meniu Navigare SPA -->
+            <nav class="nav-menu">
+                <button class="nav-item active" id="nav-dashboard" onclick="schimbaSectiune('dashboard')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Buget & Scor 50/30/20
+                </button>
+                <button class="nav-item" id="nav-investitii" onclick="schimbaSectiune('investitii')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                    Dobândă Compusă
+                </button>
+                <button class="nav-item" id="nav-obiective" onclick="schimbaSectiune('obiective')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                    Fond de Urgență & Ținte
+                </button>
+                <button class="nav-item" id="nav-academia" onclick="schimbaSectiune('academia')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    Academia & Quiz
+                </button>
+            </nav>
+
+            <!-- Widget Scor Sănătate Financiară în Header -->
+            <div class="header-status">
+                <div class="health-score-widget" onclick="schimbaSectiune('dashboard')" title="Scorul tău calculat pe baza respectării bugetului și a progresului în învățare">
+                    <div class="score-radial">
+                        <span id="headerScoreValue">82</span>
+                    </div>
+                    <div class="score-meta">
+                        <span class="score-label">Sănătate Financiară</span>
+                        <strong id="headerScoreStatus" class="score-status text-emerald">Excelent</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ZONA PRINCIPALĂ -->
+    <main class="app-container">
+
+        <!-- ========================================================
+             1. SECȚIUNEA DASHBOARD & PLANIFICATOR BUGET (50/30/20)
+             ======================================================== -->
+        <section id="section-dashboard" class="spa-section active">
+            
+            <!-- Hero Dashboard -->
+            <div class="hero-card">
+                <div class="hero-left">
+                    <span class="pill-badge">🎓 Ghid Practic de Educație Financiară</span>
+                    <h1>Preia controlul banilor tăi cu Regula 50/30/20</h1>
+                    <p class="hero-desc">
+                        Află cum să-ți împarți veniturile inteligent: <strong>50% pentru Nevoi vitale</strong>, <strong>30% pentru Dorințe</strong> și <strong>20% pentru Viitor (Economii & Investiții)</strong>.
+                    </p>
+                </div>
+
+                <div class="income-setup-card">
+                    <label for="monthlyIncomeInput" class="income-label">Venitul tău lunar net (RON):</label>
+                    <div class="income-input-wrap">
+                        <input type="number" id="monthlyIncomeInput" value="4000" min="500" step="100" oninput="actualizeazaBuget()">
+                        <span class="currency-tag">RON / lună</span>
+                    </div>
+                    <div class="quick-income-presets">
+                        <span>Presetări:</span>
+                        <button class="preset-btn" onclick="seteazaVenitPreset(2500)">2.500 RON (Student/Part-time)</button>
+                        <button class="preset-btn" onclick="seteazaVenitPreset(4000)">4.000 RON (Salariu mediu)</button>
+                        <button class="preset-btn" onclick="seteazaVenitPreset(6500)">6.500 RON (Avansat)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Carduri Repartizare Regula 50/30/20 -->
+            <div class="rule-cards-grid">
+                
+                <!-- Nevoi (50%) -->
+                <div class="rule-card needs-card">
+                    <div class="rule-header">
+                        <div class="rule-badge badge-needs">50% • Nevoi Vitale</div>
+                        <span class="rule-icon">🏠</span>
+                    </div>
+                    <h3>Nevoi Obligatorii</h3>
+                    <p class="rule-subtext">Chirie/rată, facturi, utilități, mâncare de bază, transport și sănătate.</p>
+                    
+                    <div class="rule-amounts">
+                        <div>
+                            <span class="amt-label">Alocat prin Regulă:</span>
+                            <strong id="limitNeeds" class="amt-value">2.000 RON</strong>
+                        </div>
+                        <div>
+                            <span class="amt-label">Cheltuit efectiv:</span>
+                            <strong id="spentNeeds" class="amt-spent text-needs">0 RON</strong>
+                        </div>
+                    </div>
+
+                    <div class="progress-bar-wrap">
+                        <div class="progress-bar-fill fill-needs" id="barNeeds" style="width: 0%"></div>
+                    </div>
+                    <span id="statusNeeds" class="progress-status-text">0% utilizat</span>
+                </div>
+
+                <!-- Dorințe (30%) -->
+                <div class="rule-card wants-card">
+                    <div class="rule-header">
+                        <div class="rule-badge badge-wants">30% • Dorințe & Stil</div>
+                        <span class="rule-icon">☕</span>
+                    </div>
+                    <h3>Dorințe & Confort</h3>
+                    <p class="rule-subtext">Ieșiri în oraș, vacanțe, haine noi, abonamente streaming și hobby-uri.</p>
+                    
+                    <div class="rule-amounts">
+                        <div>
+                            <span class="amt-label">Alocat prin Regulă:</span>
+                            <strong id="limitWants" class="amt-value">1.200 RON</strong>
+                        </div>
+                        <div>
+                            <span class="amt-label">Cheltuit efectiv:</span>
+                            <strong id="spentWants" class="amt-spent text-wants">0 RON</strong>
+                        </div>
+                    </div>
+
+                    <div class="progress-bar-wrap">
+                        <div class="progress-bar-fill fill-wants" id="barWants" style="width: 0%"></div>
+                    </div>
+                    <span id="statusWants" class="progress-status-text">0% utilizat</span>
+                </div>
+
+                <!-- Economii (20%) -->
+                <div class="rule-card savings-card">
+                    <div class="rule-header">
+                        <div class="rule-badge badge-savings">20% • Viitorul Tău</div>
+                        <span class="rule-icon">🌱</span>
+                    </div>
+                    <h3>Economii & Investiții</h3>
+                    <p class="rule-subtext">Fondul de urgență, depozite bancare, acțiuni, ETF-uri și pensie privată.</p>
+                    
+                    <div class="rule-amounts">
+                        <div>
+                            <span class="amt-label">Țintă lunară:</span>
+                            <strong id="limitSavings" class="amt-value">800 RON</strong>
+                        </div>
+                        <div>
+                            <span class="amt-label">Economisit deja:</span>
+                            <strong id="spentSavings" class="amt-spent text-savings">0 RON</strong>
+                        </div>
+                    </div>
+
+                    <div class="progress-bar-wrap">
+                        <div class="progress-bar-fill fill-savings" id="barSavings" style="width: 0%"></div>
+                    </div>
+                    <span id="statusSavings" class="progress-status-text">0% din țintă atins</span>
+                </div>
+
+            </div>
+
+            <!-- Grilă Funcțională: Formular Cheltuieli & Istoric Tranzacții -->
+            <div class="budget-operations-grid">
+                
+                <!-- Panou Adăugare Tranzacție -->
+                <div class="panel-card">
+                    <div class="panel-head">
+                        <h3>+ Înregistrează o cheltuială sau economie</h3>
+                        <p class="text-muted">Testează modul în care fiecare decizie de consum îți afectează bugetul</p>
+                    </div>
+
+                    <form id="addExpenseForm" onsubmit="adaugaTranzactie(event)" class="expense-form">
+                        <div class="form-group">
+                            <label for="txDesc">Descriere tranzacție:</label>
+                            <input type="text" id="txDesc" placeholder="Ex: Supermarket, Chirie, Ieșire pizza, ETF bursa..." required>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="txAmount">Sumă (RON):</label>
+                                <input type="number" id="txAmount" placeholder="Ex: 150" min="1" step="any" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="txCategory">Categorie regulă 50/30/20:</label>
+                                <select id="txCategory" required>
+                                    <option value="needs">🏠 Nevoie (50% - Chirie, Mâncare, Utilități)</option>
+                                    <option value="wants">☕ Dorință (30% - Ieșiri, Hobby, Cumpărături)</option>
+                                    <option value="savings">🌱 Economie / Investiție (20% - Fond, Bursă)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="quick-tx-tags">
+                            <span class="tag-label">Exemple rapide (click):</span>
+                            <button type="button" class="quick-tag" onclick="completeazaTranzactieExemplu('Chirie garsonieră', 1400, 'needs')">🏠 Chirie (1.400 RON)</button>
+                            <button type="button" class="quick-tag" onclick="completeazaTranzactieExemplu('Alimente & Supermarket', 350, 'needs')">🛒 Alimente (350 RON)</button>
+                            <button type="button" class="quick-tag" onclick="completeazaTranzactieExemplu('Cină în oraș & Prieteni', 180, 'wants')">🍕 Ieșire restaurant (180 RON)</button>
+                            <button type="button" class="quick-tag" onclick="completeazaTranzactieExemplu('Economisire Fond Urgență', 500, 'savings')">💰 Economii (500 RON)</button>
+                        </div>
+
+                        <button type="submit" class="btn btn-emerald btn-block">
+                            Adaugă în Buget
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Panou Diagnostic & Tranzacții Recente -->
+                <div class="panel-card">
+                    <div class="panel-head flex-between">
+                        <div>
+                            <h3>Jurnal Tranzacții Simulate</h3>
+                            <p class="text-muted">Actualizat dinamic în timp real</p>
+                        </div>
+                        <button class="btn-clean-link" onclick="curataToateTranzactiile()">Șterge tot</button>
+                    </div>
+
+                    <div id="txListContainer" class="transactions-list">
+                        <!-- Populat din JavaScript -->
+                    </div>
+
+                    <!-- Sumar Balanță Rămasă -->
+                    <div class="balance-summary-box">
+                        <div class="balance-item">
+                            <span class="bal-label">Total Cheltuit (Nevoi + Dorințe):</span>
+                            <strong id="totalSpentText" class="bal-val">0 RON</strong>
+                        </div>
+                        <div class="balance-item">
+                            <span class="bal-label">Bani Rămași Disponibili:</span>
+                            <strong id="remainingBudgetText" class="bal-val text-emerald">0 RON</strong>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ========================================================
+             2. SECȚIUNEA CALCULATOR DOBÂNDĂ COMPUSĂ (INVESTIȚII)
+             ======================================================== -->
+        <section id="section-investitii" class="spa-section">
+            
+            <div class="section-hero">
+                <span class="pill-badge">📈 Simulatorul Bogăției pe Termen Lung</span>
+                <h2>Magia Dobânzii Compuse: Timpul lucrează pentru tine</h2>
+                <p class="section-subtitle">
+                    Descoperă diferența colosală dintre a ține banii „la saltea” (unde sunt mâncați de inflație) și a-i investi cu randament compus.
+                </p>
+            </div>
+
+            <div class="compound-grid">
+                
+                <!-- Panou Glisoare Interactive -->
+                <div class="panel-card sliders-panel">
+                    <h3>Parametrii Simulării de Investiție</h3>
+                    <p class="text-muted" style="margin-bottom: 1.5rem;">Modifică glisoarele pentru a vedea proiecția instantanee</p>
+
+                    <!-- Slider 1: Suma Inițială -->
+                    <div class="slider-group">
+                        <div class="slider-label-row">
+                            <span>Suma inițială de pornire:</span>
+                            <strong id="valInitialDeposit" class="slider-badge">1.000 RON</strong>
+                        </div>
+                        <input type="range" id="rangeInitialDeposit" min="0" max="50000" step="500" value="1000" oninput="calculeazaDobandaCompusa()">
+                    </div>
+
+                    <!-- Slider 2: Economisire Lunară -->
+                    <div class="slider-group">
+                        <div class="slider-label-row">
+                            <span>Economisire & Investiție lunară:</span>
+                            <strong id="valMonthlyDeposit" class="slider-badge">400 RON</strong>
+                        </div>
+                        <input type="range" id="rangeMonthlyDeposit" min="50" max="5000" step="50" value="400" oninput="calculeazaDobandaCompusa()">
+                    </div>
+
+                    <!-- Slider 3: Randament Anual -->
+                    <div class="slider-group">
+                        <div class="slider-label-row">
+                            <span>Randament mediu anual estimat:</span>
+                            <strong id="valAnnualRate" class="slider-badge">8% (Bursă / ETF)</strong>
+                        </div>
+                        <input type="range" id="rangeAnnualRate" min="1" max="15" step="0.5" value="8" oninput="calculeazaDobandaCompusa()">
+                        <div class="rate-benchmarks">
+                            <span onclick="seteazaRandament(4)">Depozit Bancar (4%)</span>
+                            <span onclick="seteazaRandament(7)">Titluri de Stat (7%)</span>
+                            <span onclick="seteazaRandament(9)">ETF Global / S&P 500 (9%)</span>
+                        </div>
+                    </div>
+
+                    <!-- Slider 4: Orizont de Timp -->
+                    <div class="slider-group">
+                        <div class="slider-label-row">
+                            <span>Perioadă de investiție (ani):</span>
+                            <strong id="valYears" class="slider-badge">15 ani</strong>
+                        </div>
+                        <input type="range" id="rangeYears" min="1" max="35" step="1" value="15" oninput="calculeazaDobandaCompusa()">
+                    </div>
+                </div>
+
+                <!-- Rezultate Vizuale & Comparație Saltea vs Investiție -->
+                <div class="panel-card results-compound-panel">
+                    <h3>Rezultatul Proiecției Tale</h3>
+                    
+                    <div class="highlight-total-card">
+                        <span class="total-label">Capital Total Acumulat după <span id="resYearsSpan">15</span> ani:</span>
+                        <div class="total-amount-display" id="resTotalWealth">138.412 RON</div>
+                        <div class="breakdown-subchips">
+                            <span class="chip-deposit">Bani depuși de tine: <strong id="resTotalDeposited">73.000 RON</strong></span>
+                            <span class="chip-interest">Bani făcuți de dobândă: <strong id="resTotalInterest">65.412 RON</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Comparație Vizuală directă: Saltea vs FinWise Investit -->
+                    <div class="comparison-boxes-grid">
+                        <div class="comp-box comp-cash">
+                            <div class="comp-icon">🛏️</div>
+                            <h4>Bani ținuți la saltea</h4>
+                            <div class="comp-val" id="resCashOnly">73.000 RON</div>
+                            <p class="comp-note">Nu obții niciun leu dobândă, iar puterea de cumpărare scade constant din cauza inflației.</p>
+                        </div>
+
+                        <div class="comp-box comp-invest">
+                            <div class="comp-icon">🚀</div>
+                            <h4>Investiție cu dobândă compusă</h4>
+                            <div class="comp-val text-emerald" id="resInvestedOnly">138.412 RON</div>
+                            <p class="comp-note"><strong id="resMultiplier">+89% bani în plus</strong> generați pur și simplu de multiplicarea automată a profitului.</p>
+                        </div>
+                    </div>
+
+                    <!-- Tabel Cronologic / Etape Milestone -->
+                    <div class="milestones-table-wrap">
+                        <h4>Evoluția Portofoliului în Timp:</h4>
+                        <table class="milestone-table">
+                            <thead>
+                                <tr>
+                                    <th>Etapă</th>
+                                    <th>Total Depus</th>
+                                    <th>Câștig Dobândă</th>
+                                    <th>Portofoliu Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="milestonesTableBody">
+                                <!-- Generat dinamic din JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ========================================================
+             3. SECȚIUNEA FOND DE SIGURANȚĂ & OBIECTIVE (SAVINGS GOALS)
+             ======================================================== -->
+        <section id="section-obiective" class="spa-section">
+            
+            <div class="section-hero">
+                <span class="pill-badge">🛡️ Stabilitate & Siguranță Financiară</span>
+                <h2>Fondul de Urgență & Tracker de Obiective</h2>
+                <p class="section-subtitle">
+                    Regula de aur a finanțelor personale: înainte de a investi, construiește un fond de siguranță pentru 3 până la 6 luni de cheltuieli esențiale.
+                </p>
+            </div>
+
+            <div class="safety-grid">
+                
+                <!-- Calculator Fond de Siguranță -->
+                <div class="panel-card safety-calculator-panel">
+                    <div class="panel-head">
+                        <h3>Diagnostic Fond de Urgență</h3>
+                        <p class="text-muted">Află exact care este scutul tău de protecție financiară</p>
+                    </div>
+
+                    <div class="safety-form">
+                        <div class="form-group">
+                            <label for="calcMonthlyEssential">Cheltuieli esențiale lunare minime (chirie + hrană + utilități):</label>
+                            <div class="input-with-symbol">
+                                <input type="number" id="calcMonthlyEssential" value="2200" min="500" step="100" oninput="calculeazaFondSiguranta()">
+                                <span>RON</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Orizontul de protecție dorit:</label>
+                            <div class="safety-toggle-options">
+                                <label class="radio-card">
+                                    <input type="radio" name="safetyMonths" value="3" onchange="calculeazaFondSiguranta()">
+                                    <div class="radio-card-content">
+                                        <strong>3 Luni</strong>
+                                        <span>Pentru venituri stabile / buget de bază</span>
+                                    </div>
+                                </label>
+                                <label class="radio-card">
+                                    <input type="radio" name="safetyMonths" value="6" checked onchange="calculeazaFondSiguranta()">
+                                    <div class="radio-card-content">
+                                        <strong>6 Luni (Recomandat)</strong>
+                                        <span>Siguranță maximă împotriva crizelor</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="safety-output-box">
+                            <div class="safety-out-label">Dimensiunea recomandată a fondului tău de urgență:</div>
+                            <div id="safetyTargetDisplay" class="safety-out-amount">13.200 RON</div>
+                            <p class="safety-out-tip">
+                                💡 <em>Ține acești bani într-un cont de economii separat sau titluri de stat pe termen scurt, accesibili în 24-48 de ore, nu în acțiuni volatile.</em>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Obiective Active de Economisire (Goal Tracker) -->
+                <div class="panel-card goals-tracker-panel">
+                    <div class="panel-head flex-between">
+                        <div>
+                            <h3>Obiectivele Mele de Economisire</h3>
+                            <p class="text-muted">Progresul tău vizual către fiecare țintă</p>
+                        </div>
+                        <button class="btn btn-emerald btn-sm" onclick="deschideModalObiectiv()">+ Obiectiv Nou</button>
+                    </div>
+
+                    <div id="goalsContainer" class="goals-list-grid">
+                        <!-- Populat din JavaScript -->
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ========================================================
+             4. SECȚIUNEA ACADEMIA FINANCIARĂ & QUIZ CU DIPLOMĂ
+             ======================================================== -->
+        <section id="section-academia" class="spa-section">
+            
+            <div class="section-hero">
+                <span class="pill-badge">🎓 Cunoștințe Aplicate</span>
+                <h2>Academia Finanțelor: Învață și Obține Certificatul</h2>
+                <p class="section-subtitle">
+                    Parcurge cele 3 module esențiale, rezolvă testul interactiv și primești pe loc Diploma FinWise de Competență Financiară!
+                </p>
+            </div>
+
+            <!-- Cele 3 Module de Învățare -->
+            <div class="modules-grid">
+                
+                <div class="module-card">
+                    <div class="module-number">01</div>
+                    <div class="module-badge">Nivel Începător</div>
+                    <h3>Active vs. Pasive & Inflația</h3>
+                    <p>Învață cum banii pot lucra pentru tine. Un activ îți aduce bani în buzunar, în timp ce un pasiv îți scoate bani din buzunar.</p>
+                    <ul class="module-points">
+                        <li>Ce este cu adevărat o investiție</li>
+                        <li>Cum scade inflația valoarea banilor</li>
+                        <li>Diferența între preț și valoare</li>
+                    </ul>
+                    <button class="btn-module-expand" onclick="arataLectieModal(1)">Citește Lecția Scurtă (2 min) →</button>
+                </div>
+
+                <div class="module-card">
+                    <div class="module-number">02</div>
+                    <div class="module-badge">Nivel Mediu</div>
+                    <h3>Capcanele Datoriilor & Credite</h3>
+                    <p>Datoriile bune vs. datoriile toxice de consum. De ce dobânzile cardurilor de cumpărături îți pot ruina independența financiară.</p>
+                    <ul class="module-points">
+                        <li>Datorii bune vs. datorii nocive</li>
+                        <li>Capcana plății minime pe cardul de credit</li>
+                        <li>Metoda Avalanșă vs. Bulgăre de zăpadă</li>
+                    </ul>
+                    <button class="btn-module-expand" onclick="arataLectieModal(2)">Citește Lecția Scurtă (2 min) →</button>
+                </div>
+
+                <div class="module-card">
+                    <div class="module-number">03</div>
+                    <div class="module-badge">Nivel Avansat</div>
+                    <h3>Bursă, ETF-uri & Diversificare</h3>
+                    <p>Nu pune toate ouăle în același coș. Înțelege cum funcționează un fond indexat pe întreaga economie mondială.</p>
+                    <ul class="module-points">
+                        <li>Ce este un ETF (Exchange Traded Fund)</li>
+                        <li>De ce nu poți ghici piața pe termen scurt</li>
+                        <li>Strategia DCA (Dollar-Cost Averaging)</li>
+                    </ul>
+                    <button class="btn-module-expand" onclick="arataLectieModal(3)">Citește Lecția Scurtă (2 min) →</button>
+                </div>
+
+            </div>
+
+            <!-- Zona de Quiz Interactiv -->
+            <div class="quiz-wrapper panel-card">
+                <div class="quiz-head flex-between">
+                    <div>
+                        <span class="quiz-badge">Test de Verificare Cunoștințe</span>
+                        <h3>Quiz Interactiv: Cât de educat financiar ești?</h3>
+                    </div>
+                    <div class="quiz-progress-indicator">
+                        Întrebarea <span id="quizCurrentQ">1</span> din <span id="quizTotalQ">5</span>
+                    </div>
+                </div>
+
+                <!-- Ecran Întrebare Quiz -->
+                <div id="quizQuestionContainer" class="quiz-body">
+                    <!-- Populat dinamic din JS -->
+                </div>
+
+                <!-- Ecran Rezultat Final Quiz & Certificat -->
+                <div id="quizResultContainer" class="quiz-result-view hidden">
+                    <div class="quiz-result-header">
+                        <div class="trophy-icon">🏆</div>
+                        <h2>Felicitări! Ai finalizat Testul de Educație Financiară</h2>
+                        <p id="quizScoreText" class="quiz-score-subtext">Scorul tău: 5 din 5 răspunsuri corecte (100%)</p>
+                    </div>
+
+                    <!-- Certificatul Digital Personalizat -->
+                    <div class="certificate-frame" id="printableCertificate">
+                        <div class="certificate-inner">
+                            <div class="cert-header">
+                                <div class="cert-seal">★ FinWise ★</div>
+                                <span class="cert-title">CERTIFICAT DE ABSOLVIRE</span>
+                                <span class="cert-subtitle">PROGRAMUL NAȚIONAL DE EDUCAȚIE FINANCIARĂ</span>
+                            </div>
+
+                            <p class="cert-text">Se conferă prezentul certificat utilizatorului:</p>
+                            <h1 id="certStudentName" class="cert-name">Alexandru Popescu</h1>
+                            <p class="cert-body">
+                                Pentru demonstrarea cunoștințelor fundamentale de planificare a bugetului (regula 50/30/20), înțelegerea dobânzii compuse, gestionarea riscului și construirea fondului de siguranță.
+                            </p>
+
+                            <div class="cert-footer">
+                                <div>
+                                    <span class="cert-date-label">Data eliberării:</span>
+                                    <strong id="certIssueDate">23 Octombrie 2026</strong>
+                                </div>
+                                <div class="cert-badge-valid">
+                                    ✓ VERIFICAT DIGITAL
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quiz-actions-row">
+                        <button class="btn btn-emerald" onclick="printeazaCertificat()">
+                            🖨️ Descarcă / Printează Certificatul
+                        </button>
+                        <button class="btn btn-secondary" onclick="reseteazaQuiz()">
+                            Reia Testul
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ========================================================
+         MODALE: ADĂUGARE OBIECTIV & CONTRIBUȚIE
+         ======================================================== -->
+    
+    <!-- Modal Obiectiv Nou -->
+    <div id="modalAddGoal" class="modal-overlay hidden" onclick="inchideModalLaExterior(event, 'modalAddGoal')">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Setează un Obiectiv Nou de Economisire</h3>
+                <button class="btn-close-modal" onclick="inchideModal('modalAddGoal')">✕</button>
+            </div>
+            <form onsubmit="salveazaObiectivNou(event)" class="modal-body">
+                <div class="form-group">
+                    <label for="goalTitle">Numele obiectivului:</label>
+                    <input type="text" id="goalTitle" placeholder="Ex: Laptop facultate, Fond călătorie, Primul avans..." required>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="goalTarget">Suma țintă (RON):</label>
+                        <input type="number" id="goalTarget" placeholder="Ex: 4000" min="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="goalCurrent">Economisit deja (RON):</label>
+                        <input type="number" id="goalCurrent" placeholder="Ex: 500" min="0" value="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="goalIcon">Alege o iconiță sugestivă:</label>
+                    <select id="goalIcon">
+                        <option value="💻">💻 Tehnologie / Laptop</option>
+                        <option value="✈️">✈️ Călătorie & Vacanță</option>
+                        <option value="🚗">🚗 Permis & Mașină</option>
+                        <option value="📚">📚 Cursuri & Dezvoltare</option>
+                        <option value="🛡️">🛡️ Siguranță & Urgență</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="inchideModal('modalAddGoal')">Anulează</button>
+                    <button type="submit" class="btn btn-emerald">Salvează Obiectivul</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Alimentare Obiectiv -->
+    <div id="modalContributeGoal" class="modal-overlay hidden" onclick="inchideModalLaExterior(event, 'modalContributeGoal')">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Adaugă Banii Economisiți</h3>
+                <button class="btn-close-modal" onclick="inchideModal('modalContributeGoal')">✕</button>
+            </div>
+            <form onsubmit="finalizeazaContributie(event)" class="modal-body">
+                <p id="contributeGoalInfo" class="text-muted"></p>
+                <div class="form-group">
+                    <label for="contributeAmount">Câți bani depui acum către obiectiv (RON):</label>
+                    <input type="number" id="contributeAmount" min="10" step="any" placeholder="Ex: 200" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="inchideModal('modalContributeGoal')">Anulează</button>
+                    <button type="submit" class="btn btn-emerald">Alimentează Obiectivul</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Detalii Lecție -->
+    <div id="modalLesson" class="modal-overlay hidden" onclick="inchideModalLaExterior(event, 'modalLesson')">
+        <div class="modal-card modal-lg">
+            <div class="modal-header">
+                <h3 id="lessonModalTitle">Titlu Lecție</h3>
+                <button class="btn-close-modal" onclick="inchideModal('modalLesson')">✕</button>
+            </div>
+            <div class="modal-body" id="lessonModalContent">
+                <!-- Populat din JS -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-emerald" onclick="inchideModal('modalLesson')">Am înțeles conceptul ✓</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUB-SOLUL PAGINII -->
+    <footer class="app-footer">
+        <div class="footer-inner">
+            <div class="footer-info">
+                <strong>FinWise</strong> — Platformă Interactivă de Educație Financiară (Single Page Application)
+                <p>Creat pentru dezvoltarea abilităților practice de bugetare, economisire și investiție pe termen lung.</p>
+            </div>
+            <div class="footer-controls">
+                <button class="btn-reset-demo" onclick="reseteazaToateDateleFinWise()">
+                    ↻ Resetează Datele Demo
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPTURI LOGICĂ SPA -->
+    <script src="script.js"></script>
+</body>
+</html>
